@@ -11,84 +11,84 @@
 
 
 ==> Uboot
-	>> compiled but still to be run
-	>> http://www.twam.info/hardware/beaglebone-black/u-boot-on-beaglebone-black
+    >> compiled but still to be run
+    >> http://www.twam.info/hardware/beaglebone-black/u-boot-on-beaglebone-black
     - $ git clone git://git.denx.de/u-boot.git && cd u-boot
-	- $ make am335x_boneblack_defconfig
-	- $ ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- make
-	- Configuring U-Boot as uEnv.txt
-		To configure U-Boot we create a file uEnv.txt on the boot partition and fill it, e.g. with
-		-----
-		console=ttyO0,115200n8
-		ipaddr=192.168.23.2
-		serverip=192.168.23.1
-		rootpath=/exports/rootfs
-		netargs=setenv bootargs console=${console} ${optargs} root=/dev/nfs nfsroot=${serverip}:${rootpath},${nfsopts} rw ip=${ipaddr}:${serverip}:192.168.23.1:255.255.255.0:beaglebone:eth0:none:192.168.23.1
-		netboot=echo Booting from network ...; tftp ${loadaddr} ${bootfile}; tftp ${fdtaddr} ${fdtfile}; run netargs; bootz ${loadaddr} - ${fdtaddr}
-		uenvcmd=run netboot
-		-----
-	- Copy u-boot, uEnv.txt & MLO to sd card
+    - $ make am335x_boneblack_defconfig
+    - $ ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- make
+    - Configuring U-Boot as uEnv.txt
+        To configure U-Boot we create a file uEnv.txt on the boot partition and fill it, e.g. with
+        -----
+        console=ttyO0,115200n8
+        ipaddr=192.168.23.2
+        serverip=192.168.23.1
+        rootpath=/exports/rootfs
+        netargs=setenv bootargs console=${console} ${optargs} root=/dev/nfs nfsroot=${serverip}:${rootpath},${nfsopts} rw ip=${ipaddr}:${serverip}:192.168.23.1:255.255.255.0:beaglebone:eth0:none:192.168.23.1
+        netboot=echo Booting from network ...; tftp ${loadaddr} ${bootfile}; tftp ${fdtaddr} ${fdtfile}; run netargs; bootz ${loadaddr} - ${fdtaddr}
+        uenvcmd=run netboot
+        -----
+    - Copy u-boot, uEnv.txt & MLO to sd card
 ===============================================================================================================================================
 ===============================================================================================================================================
 
 ===============================================================================================================================================
 ===============================================================================================================================================
 ==>> kernel TFTP boot
-	>> working
-	- http://wiki.beyondlogic.org/index.php?title=BeagleBoneBlack_Building_Kernel
-	>> compiile kernel
-	- make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- beaglebone_defconfig
-	- make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- -j4
-	- make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- uImage dtbs LOADADDR=0x80008000 -j4
+    >> working
+    - http://wiki.beyondlogic.org/index.php?title=BeagleBoneBlack_Building_Kernel
+    >> compiile kernel
+    - make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- beaglebone_defconfig
+    - make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- -j4
+    - make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- uImage dtbs LOADADDR=0x80008000 -j4
 
-	>> copy tftpboot files
-	- cp arch/arm/boot/uImage uImage-BBB
-	- cp arch/arm/boot/dts/am335x-boneblack.dtb /tftpboot/ am335x-boneblack.dtb
+    >> copy tftpboot files
+    - cp arch/arm/boot/uImage uImage-BBB
+    - cp arch/arm/boot/dts/am335x-boneblack.dtb /tftpboot/ am335x-boneblack.dtb
 
-	>> BBB tftpboot settings
-	- setenv ipaddr 192.168.0.250
-	- setenv serverip 192.168.0.251
-	- tftpboot 0x80F80000 am335x-boneblack.dtb
-	- tftpboot 0x80007FC0 uImage-BBB
-	- setenv bootargs console=ttyO0,115200n8 root=/dev/mmcblk0p2 ro rootfstype=ext4 rootwait
-	- bootm 0x80007FC0 - 0x80F80000
+    >> BBB tftpboot settings
+    - setenv ipaddr 192.168.0.250
+    - setenv serverip 192.168.0.251
+    - tftpboot 0x80F80000 am335x-boneblack.dtb
+    - tftpboot 0x80007FC0 uImage-BBB
+    - setenv bootargs console=ttyO0,115200n8 root=/dev/mmcblk0p2 ro rootfstype=ext4 rootwait
+    - bootm 0x80007FC0 - 0x80F80000
 
-	>> SD card
-	/dev/mmcblk0p1   *          63      144584       72261    c  W95 FAT32 (LBA)
-	/dev/mmcblk0p2          147456     7127039     3489792   83  Linux
-	/dev/mmcblk0p3         7136324    15635593     4249635   83  Linux
+    >> SD card
+    /dev/mmcblk0p1   *          63      144584       72261    c  W95 FAT32 (LBA)
+    /dev/mmcblk0p2          147456     7127039     3489792   83  Linux
+    /dev/mmcblk0p3         7136324    15635593     4249635   83  Linux
 
-	>> Internal eMMC
-	/dev/mmcblk1p1   *        2048      198655       98304    e  W95 FAT16 (LBA)
-	/dev/mmcblk1p2          198656     7553023     3677184   83  Linux
+    >> Internal eMMC
+    /dev/mmcblk1p1   *        2048      198655       98304    e  W95 FAT16 (LBA)
+    /dev/mmcblk1p2          198656     7553023     3677184   83  Linux
 
-	- setenv ipaddr 192.168.0.102;setenv serverip 192.168.0.101;tftpboot 0x80F80000 am335x-boneblack.dtb;tftpboot 0x80007FC0 uImage;setenv bootargs console=ttyO0,115200n8 root=/dev/mmcblk0p2 ro rootfstype=ext4 rootwait;bootm 0x80007FC0 - 0x80F80000
+    - setenv ipaddr 192.168.0.102;setenv serverip 192.168.0.101;tftpboot 0x80F80000 am335x-boneblack.dtb;tftpboot 0x80007FC0 uImage;setenv bootargs console=ttyO0,115200n8 root=/dev/mmcblk0p2 ro rootfstype=ext4 rootwait;bootm 0x80007FC0 - 0x80F80000
 ==============================================================================================================================================
 ===============================================================================================================================================
 
 ==> Kernel
-	>> working
-	git clone git://github.com/beagleboard/kernel.git
-	>> build
-	~/kernel$ git checkout 3.8
-	~/kernel$ ./patch.sh
-	~/kernel$ cp configs/beaglebone kernel/arch/arm/configs/beaglebone_defconfig
-	~/kernel$ wget http://arago-project.org/git/projects/?p=am33x-cm3.git\;a=blob_plain\;f=bin/am335x-pm-firmware.bin\;hb=HEAD -O kernel/firmware/am335x-pm-firmware.bin
-	~/kernel$ cd kernel
-	~/kernel/kernel$ mkdir rootfs
-	~/kernel/kernel$ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- beaglebone_defconfig
-	~/kernel/kernel$ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- -j4 uImage dtbs
-	~/kernel/kernel$ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- -j4 modules
-	~/kernel/kernel$ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- INSTALL_MOD_PATH=rootfs modules_install
-	~/kernel/kernel$ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- uImage-dtb.am335x-bone
-	~/kernel/kernel$ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- uImage-dtb.am335x-boneblack
+    >> working
+    git clone git://github.com/beagleboard/kernel.git
+    >> build
+    ~/kernel$ git checkout 3.8
+    ~/kernel$ ./patch.sh
+    ~/kernel$ cp configs/beaglebone kernel/arch/arm/configs/beaglebone_defconfig
+    ~/kernel$ wget http://arago-project.org/git/projects/?p=am33x-cm3.git\;a=blob_plain\;f=bin/am335x-pm-firmware.bin\;hb=HEAD -O kernel/firmware/am335x-pm-firmware.bin
+    ~/kernel$ cd kernel
+    ~/kernel/kernel$ mkdir rootfs
+    ~/kernel/kernel$ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- beaglebone_defconfig
+    ~/kernel/kernel$ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- -j4 uImage dtbs
+    ~/kernel/kernel$ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- -j4 modules
+    ~/kernel/kernel$ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- INSTALL_MOD_PATH=rootfs modules_install
+    ~/kernel/kernel$ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- uImage-dtb.am335x-bone
+    ~/kernel/kernel$ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- uImage-dtb.am335x-boneblack
 
-	>> boot from sd card
-	- copy uImage to /boot/ of sd card
+    >> boot from sd card
+    - copy uImage to /boot/ of sd card
 
-	>> Bootfrom NFS
-	- cp uImage-dtb.am335x-boneblack /tftpboot/uImage-dtb
-	- setenv ipaddr 192.168.0.102;setenv serverip 192.168.0.101;tftpboot 0x80200000 uImage-dtb;setenv bootargs console=ttyO0,115200n8 root=/dev/mmcblk0p2 ro rootfstype=ext4 rootwait;bootm 0x80200000
+    >> Bootfrom NFS
+    - cp uImage-dtb.am335x-boneblack /tftpboot/uImage-dtb
+    - setenv ipaddr 192.168.0.102;setenv serverip 192.168.0.101;tftpboot 0x80200000 uImage-dtb;setenv bootargs console=ttyO0,115200n8 root=/dev/mmcblk0p2 ro rootfstype=ext4 rootwait;bootm 0x80200000
 
 
 ===============================================================================================================================================
@@ -98,19 +98,19 @@
 ===============================================================================================================================================
 ===============================================================================================================================================
 ==>> share internet (closed)
-	>> bbb console
-		- ssh 192.168.7.2 -l root
-		- ifconfig usb0 192.168.7.2
-		- route add default gw 192.168.7.1
-	>> PC
-		- sudo su
-		#wlan0 is my internet facing interface, eth5 is the BeagleBone USB connection
-		- ifconfig eth5 192.168.7.1
-		- iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
-		- iptables --append FORWARD --in-interface eth5 -j ACCEPT
-		- echo 1 > /proc/sys/net/ipv4/ip_forward
-	>> bbb
-		- echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+    >> bbb console
+        - ssh 192.168.7.2 -l root
+        - ifconfig usb0 192.168.7.2
+        - route add default gw 192.168.7.1
+    >> PC
+        - sudo su
+        #wlan0 is my internet facing interface, eth5 is the BeagleBone USB connection
+        - ifconfig eth5 192.168.7.1
+        - iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
+        - iptables --append FORWARD --in-interface eth5 -j ACCEPT
+        - echo 1 > /proc/sys/net/ipv4/ip_forward
+    >> bbb
+        - echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 ===============================================================================================================================================
 ===============================================================================================================================================
 
@@ -120,35 +120,152 @@ Setup micro-sd card
 ==========================================================================
 >> working
 => http://downloads.angstrom-distribution.org/demo/beaglebone/
-	- with sample images
-	- https://debian.beagleboard.org/images/
+    - with sample images
+    - https://debian.beagleboard.org/images/
         - get BBB-eMMC-flasher*.img.* file
         - extract downloaded image to sd card.
         - on flashing start 4 user led's will blink
         - on completion flashing BBB board autmatically gets poweroff.
-	- http://elinux.org/Beagleboard:BeagleBoneBlack_Debian#Flashing_eMMC
+    - http://elinux.org/Beagleboard:BeagleBoneBlack_Debian#Flashing_eMMC
 
-	Download an img.gz or img.xz file from above e.g. Angstrom-Cloud9-IDE-eglibc-ipk-v2011.10-core-beaglebone-r0.img.gz (or a more recent version).
-	Unpack the image to the raw BeagleBone SD card.
-	NOTE: superuser privileges are required when unpacking the image.
-	eg. for Linux:
+    Download an img.gz or img.xz file from above e.g. Angstrom-Cloud9-IDE-eglibc-ipk-v2011.10-core-beaglebone-r0.img.gz (or a more recent version).
+    Unpack the image to the raw BeagleBone SD card.
+    NOTE: superuser privileges are required when unpacking the image.
+    eg. for Linux:
 
-	$ sudo -s
-	(type in your password)
-	# zcat Angstrom-Cloud9-IDE-eglibc-ipk-v2011.10-core-beaglebone-r0.img.gz > /dev/sdX
-	# exit
+    $ sudo -s
+    (type in your password)
+    # zcat Angstrom-Cloud9-IDE-eglibc-ipk-v2011.10-core-beaglebone-r0.img.gz > /dev/sdX
+    # exit
 
-	Or for the img.xz:
+    Or for the img.xz:
 
-	$ sudo -s
-	(type in your password)
-	# xz -dkc Angstrom-Cloud9-IDE-eglibc-ipk-v2011.10-core-beaglebone-r0.img.xz > /dev/sdX
-	# xz -dkc BBB-eMMC-flasher-debian-7.5-2014-05-14-2gb.img.xz > /dev/sdX
-	# exit
+    $ sudo -s
+    (type in your password)
+    # xz -dkc Angstrom-Cloud9-IDE-eglibc-ipk-v2011.10-core-beaglebone-r0.img.xz > /dev/sdX
+    # xz -dkc BBB-eMMC-flasher-debian-7.5-2014-05-14-2gb.img.xz > /dev/sdX
+    # exit
 
-	Insert SD card into BeagleBone and power it up.
+    Insert SD card into BeagleBone and power it up.
 
 ==========================================================================
 bootfrom sd card
 ==========================================================================
-	- refer BBB SRM
+    - refer BBB SRM
+
+    
+==========================================================================
+Installing xenomai for beaglebone black
+==========================================================================
+>> http://brunosmartins.info/xenomai-on-the-beaglebone-black-in-14-easy-steps/
+
+- Step 0: Get all the tools that will be needed (cross-compiler and dev libraries).
+    $ sudo apt-get install build-essential libncurses5{,-dev} gcc-arm-linux-gnueabi
+    $ sudo apt-get install build-essential libncurses5{,-dev} gcc-arm-linux-gnueabi
+
+-------------- Building the Kernel --------------
+Step 1: First of all, make a directory to hold all of our development files. I’ll call mine bbb. 
+    $ mkdir bbb
+    $ cd bbb
+    $ export BBB=$(pwd)
+
+Step 2: Get the Linux kernel for the BeagleBone and the Xenomai sources. This might take a while.
+    $ git clone http://github.com/beagleboard/kernel.git beagle-kernel
+    $ wget http://download.gna.org/xenomai/stable/xenomai-2.6.3.tar.bz2
+    $ tar xvjf xenomai-2.6.3.tar.bz2
+
+Step 3: Checkout kernel 3.8 version branch. Apply BeagleBone’s patches.
+    - Note: In this step I revert to a specific commit because newer ones are known to cause problems.
+    $ cd beagle-kernel
+    $ git checkout origin/3.8 -b 3.8
+    $ git reset --hard eae56c3
+    $ ./patch.sh
+
+Step 4: Get a firmware that the kernel config will need (I’m not sure whether this firmware is really needed).
+    $ wget "http://arago-project.org/git/projects/?p=am33x-cm3.git;a=blob_plain;f=bin/am335x-pm-firmware.bin;hb=HEAD" -O kernel/firmware/am335x-pm-firmware.bin
+
+Step 5: Copy the BeagleBone default config as the running config.
+    $ cp configs/beaglebone kernel/.config
+
+Step 6: Apply I-pipe patches to the BeagleBone kernel.
+    $ cd kernel
+    $ patch -p1 < ../../xenomai-2.6.3/ksrc/arch/arm/patches/beaglebone/ipipe-core-3.8.13-beaglebone-pre.patch
+    $ patch -p1 < ../../xenomai-2.6.3/ksrc/arch/arm/patches/ipipe-core-3.8.13-arm-3.patch
+    $ patch -p1 < ../../xenomai-2.6.3/ksrc/arch/arm/patches/beaglebone/ipipe-core-3.8.13-beaglebone-post.patch
+
+Step 7: Run the Xenomai prepare-kernel  script for the BeagleBone kernel.
+    $ cd ../../xenomai-2.6.3/scripts
+    $ ./prepare-kernel.sh --arch=arm --linux=../../beagle-kernel/kernel
+
+Step 8: Configure the kernel to be built.
+    $ cd ../../beagle-kernel/kernel
+    $ make ARCH=arm menuconfig
+        - Under  CPU Power Management --->  CPU Frequency scaling, disable  [ ] CPU Frequency scaling . (Note: Don’t know if it’s better to leave it enabled, read the comments!)
+        - Under  Real-time sub-system  ---> Drivers ---> Testing drivers, enable everything.
+
+Step 9: Compile the kernel.
+    - Note: I chose 16 to the -j  option, because my computer has 8 cores. Choose a value appropriate to your computer. I read somewhere that 2 times the number of cores is a good number.
+    - Note: If there were errors in the compilation, the messages will probably be lost among all other output. To see them, simply run the command again.
+    $ make -j16 ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- LOADADDR=0x80008000 uImage dtbs modules
+
+Preparing an SD Card
+- Now let’s get an SD Card ready with the Angstrom distribution and our kernel. If you want to use this kernel with the distribution on the eMMC memory, just put it in the appropriate place.
+
+Step 10: Download and copy the default Angstrom distribution to your SD Card. Replace /dev/sdX  with the path to your SD Card. sudo fdisk -l  is your friend. 
+    Note: I used a SanDisk 4GB SD Card.
+    CAUTION: YOU WILL LOSE ALL YOUR PREVIOUS DATA ON THE DEVICE /dev/sdX !
+    $ cd $BBB
+    $ wget https://s3.amazonaws.com/angstrom/demo/beaglebone/Angstrom-Cloud9-IDE-GNOME-eglibc-ipk-v2012.12-beaglebone-2013.06.20.img.xz
+    $ sudo -s
+    $ xz -dkc Angstrom*img.xz > /dev/sdX
+    $ exit
+
+Step 11: Mount the Angstrom partition. Copy kernel and kernel modules (thanks for your comment, Jurg Lehni!), Xenomai modules and source folder to that partition. Replace  /dev/sdX2  with your actual path to the partition.
+    $ mkdir sd
+    $ sudo mount /dev/sdX2 sd
+    $ sudo cp beagle-kernel/kernel/arch/arm/boot/uImage sd/boot/uImage-3.8.13
+    $ cd beagle-kernel/kernel
+    $ sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- INSTALL_MOD_PATH=$BBB/sd modules_install
+    $ cd -
+    $ mkdir sd/home/root/xeno_drivers
+    $ cp beagle-kernel/kernel/drivers/xenomai/testing/*.ko sd/home/root/xeno_drivers/
+    $ cp -r xenomai-2.6.3 sd/home/root
+    $ sudo umount sd
+
+Testing
+- Now put the SD card on the BeagleBone, boot it, ssh into it and test Xenomai.
+
+Step 12: Configure the date and compile Xenomai
+    Note: an example for the date command would be  date -s "21 May 2014 13:25 GMT-3" 
+    $ date -s "DD MMM YYYY HH:MM TZ"
+    $ cd ~/xenomai-2.6.3
+    $ ./configure CFLAGS="-march=armv7-a -mfpu=vfp3" LDFLAGS="-march=armv7-a -mfpu=vfp3"
+    $ make
+    $ make install
+
+Step 13: Load the testing driver
+    $ cd ~/xeno_drivers
+    $ insmod xeno_klat.ko
+
+Step 14: Run some tests!
+    User-mode latency:
+    $ /usr/xenomai/bin/latency
+
+    In-kernel Latency:
+    $ /usr/xenomai/bin/klatency
+
+Poke around:
+    $ cat /proc/xenomai/version 
+    $ cat /proc/ipipe/version 
+
+Change parameters:
+    $ cat /proc/xenomai/latency 
+    4999
+    $ echo "0" >> /proc/xenomai/latency
+    $ cat /proc/xenomai/latency 
+    0
+    $ rmmod xeno_lat
+    $ cd ~/xeno_drivers
+    $ insmod xeno_klat.ko
+    $ /usr/xenomai/bin/klatency
+==========================================================================
